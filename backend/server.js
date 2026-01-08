@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const productRoutes = require('./routes/productRoutes');
 
 const app = express();
 const PORT = 5000;
@@ -12,6 +13,9 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.json({ message: 'E-Commerce API is running!' });
 });
+
+// Routes
+app.use('/products', productRoutes);
 
 // Start server
 app.listen(PORT, () => {
