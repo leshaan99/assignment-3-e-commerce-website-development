@@ -1,0 +1,25 @@
+.product-list {
+  padding: 1rem;
+}
+
+.product-list h2 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+}
+
+.error {
+  color: #e53e3e;
+}

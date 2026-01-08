@@ -1,13 +1,14 @@
 import React from 'react';
+import ProductList from './pages/ProductList';
 
 function App() {
   return (
     <div className="App">
       <header>
-        <h1>Welcome to Our E-Commerce Store</h1>
+        <h1>E-Commerce Store</h1>
       </header>
       <main>
-        <p>Products coming soon...</p>
+        <ProductList />
       </main>
     </div>
   );
