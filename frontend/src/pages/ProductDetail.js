@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProductById } from '../api/productApi';
+import { addToCart } from '../api/cartApi';
 import './ProductDetail.css';
 
 function ProductDetail() {
@@ -9,6 +10,7 @@ function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -59,7 +61,20 @@ function ProductDetail() {
           <p className="product-stock">
             {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
           </p>
-          <button className="add-to-cart-btn">Add to Cart</button>
+          <button 
+            className="add-to-cart-btn" 
+            onClick={async () => {
+              try {
+                await addToCart(product.id);
+                setAddedToCart(true);
+                setTimeout(() => setAddedToCart(false), 2000);
+              } catch (err) {
+                console.error('Error adding to cart:', err);
+              }
+            }}
+          >
+            {addedToCart ? '✓ Added to Cart!' : 'Add to Cart'}
+          </button>
         </div>
       </div>
     </div>
