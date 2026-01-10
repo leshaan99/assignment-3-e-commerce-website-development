@@ -1,35 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCart, removeFromCart } from '../api/cartApi';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchCart, removeItemFromCart } from '../store/cartSlice';
 import './Cart.css';
 
 function Cart() {
   const navigate = useNavigate();
-  const [cart, setCart] = useState({ items: [], total: 0 });
-  const [loading, setLoading] = useState(true);
-
-  const fetchCart = async () => {
-    try {
-      const data = await getCart();
-      setCart(data);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error fetching cart:', err);
-      setLoading(false);
-    }
-  };
+  const dispatch = useDispatch();
+  const { items, total, loading } = useSelector((state) => state.cart);
 
   useEffect(() => {
-    fetchCart();
-  }, []);
+    dispatch(fetchCart());
+  }, [dispatch]);
 
-  const handleRemove = async (productId) => {
-    try {
-      const data = await removeFromCart(productId);
-      setCart(data);
-    } catch (err) {
-      console.error('Error removing item:', err);
-    }
+  const handleRemove = (productId) => {
+    dispatch(removeItemFromCart(productId));
   };
 
   if (loading) {
@@ -44,7 +29,7 @@ function Cart() {
 
       <h2>Your Shopping Cart</h2>
 
-      {cart.items.length === 0 ? (
+      {items.length === 0 ? (
         <div className="empty-cart">
           <p>Your cart is empty</p>
           <button onClick={() => navigate('/')} className="shop-btn">
@@ -54,7 +39,7 @@ function Cart() {
       ) : (
         <>
           <div className="cart-items">
-            {cart.items.map((item) => (
+            {items.map((item) => (
               <div key={item.id} className="cart-item">
                 <img src={item.image} alt={item.name} className="cart-item-image" />
                 <div className="cart-item-info">
@@ -81,7 +66,7 @@ function Cart() {
             <h3>Order Summary</h3>
             <div className="summary-row">
               <span>Total:</span>
-              <span className="total-price">${cart.total.toFixed(2)}</span>
+              <span className="total-price">${total.toFixed(2)}</span>
             </div>
             <button className="checkout-btn">Proceed to Checkout</button>
           </div>

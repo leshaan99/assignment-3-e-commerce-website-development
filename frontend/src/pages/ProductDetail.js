@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { getProductById } from '../api/productApi';
-import { addToCart } from '../api/cartApi';
+import { addItemToCart } from '../store/cartSlice';
 import './ProductDetail.css';
 
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -63,14 +65,10 @@ function ProductDetail() {
           </p>
           <button 
             className="add-to-cart-btn" 
-            onClick={async () => {
-              try {
-                await addToCart(product.id);
-                setAddedToCart(true);
-                setTimeout(() => setAddedToCart(false), 2000);
-              } catch (err) {
-                console.error('Error adding to cart:', err);
-              }
+            onClick={() => {
+              dispatch(addItemToCart(product.id));
+              setAddedToCart(true);
+              setTimeout(() => setAddedToCart(false), 2000);
             }}
           >
             {addedToCart ? '✓ Added to Cart!' : 'Add to Cart'}
