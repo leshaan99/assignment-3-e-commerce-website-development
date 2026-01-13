@@ -7,9 +7,13 @@ export const fetchCart = createAsyncThunk('cart/fetchCart', async () => {
   return response;
 });
 
-export const addItemToCart = createAsyncThunk('cart/addItem', async (productId) => {
-  const response = await cartApi.addToCart(productId);
-  return response;
+export const addItemToCart = createAsyncThunk('cart/addItem', async (productId, { rejectWithValue }) => {
+  try {
+    const response = await cartApi.addToCart(productId);
+    return response;
+  } catch (error) {
+    return rejectWithValue(error.message);
+  }
 });
 
 export const removeItemFromCart = createAsyncThunk('cart/removeItem', async (productId) => {
@@ -25,7 +29,14 @@ const cartSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    // Clear cart (used on logout)
+    clearCart: (state) => {
+      state.items = [];
+      state.total = 0;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Fetch cart
@@ -36,6 +47,7 @@ const cartSlice = createSlice({
         state.loading = false;
         state.items = action.payload.items;
         state.total = action.payload.total;
+        state.error = null;
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.loading = false;
@@ -45,6 +57,10 @@ const cartSlice = createSlice({
       .addCase(addItemToCart.fulfilled, (state, action) => {
         state.items = action.payload.items;
         state.total = action.payload.total;
+        state.error = null;
+      })
+      .addCase(addItemToCart.rejected, (state, action) => {
+        state.error = action.payload;
       })
       // Remove item
       .addCase(removeItemFromCart.fulfilled, (state, action) => {
@@ -54,4 +70,5 @@ const cartSlice = createSlice({
   },
 });
 
+export const { clearCart } = cartSlice.actions;
 export default cartSlice.reducer;

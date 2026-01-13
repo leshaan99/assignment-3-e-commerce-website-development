@@ -1,17 +1,40 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const products = require('../data/products');
 const { getCart, addToCart, removeFromCart, clearCart, getCartTotal } = require('../data/cart');
 
-// GET /cart - Get cart items
-router.get('/', (req, res) => {
-  const cart = getCart();
-  const total = getCartTotal();
+const JWT_SECRET = 'your-secret-key-change-in-production';
+
+// Middleware to verify JWT token
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access denied. Please login.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: 'Invalid or expired token' });
+  }
+};
+
+// GET /cart - Get cart items (requires auth)
+router.get('/', authenticateToken, (req, res) => {
+  const userId = req.user.id;
+  const cart = getCart(userId);
+  const total = getCartTotal(userId);
   res.json({ items: cart, total: total });
 });
 
-// POST /cart/add - Add item to cart
-router.post('/add', (req, res) => {
+// POST /cart/add - Add item to cart (requires auth)
+router.post('/add', authenticateToken, (req, res) => {
+  const userId = req.user.id;
   const { productId, quantity } = req.body;
   
   if (!productId) {
@@ -24,24 +47,26 @@ router.post('/add', (req, res) => {
     return res.status(404).json({ message: 'Product not found' });
   }
   
-  const cart = addToCart(product, quantity || 1);
-  const total = getCartTotal();
+  const cart = addToCart(userId, product, quantity || 1);
+  const total = getCartTotal(userId);
   
   res.json({ message: 'Product added to cart', items: cart, total: total });
 });
 
-// DELETE /cart/:id - Remove item from cart
-router.delete('/:id', (req, res) => {
+// DELETE /cart/:id - Remove item from cart (requires auth)
+router.delete('/:id', authenticateToken, (req, res) => {
+  const userId = req.user.id;
   const productId = parseInt(req.params.id);
-  const cart = removeFromCart(productId);
-  const total = getCartTotal();
+  const cart = removeFromCart(userId, productId);
+  const total = getCartTotal(userId);
   
   res.json({ message: 'Product removed from cart', items: cart, total: total });
 });
 
-// DELETE /cart - Clear cart
-router.delete('/', (req, res) => {
-  clearCart();
+// DELETE /cart - Clear cart (requires auth)
+router.delete('/', authenticateToken, (req, res) => {
+  const userId = req.user.id;
+  clearCart(userId);
   res.json({ message: 'Cart cleared', items: [], total: 0 });
 });
 

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCart } from './store/cartSlice';
+import { fetchCart, clearCart } from './store/cartSlice';
 import { logout } from './store/authSlice';
 import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
@@ -11,15 +11,19 @@ import Login from './pages/Login';
 function AppContent() {
   const dispatch = useDispatch();
   const { items } = useSelector((state) => state.cart);
-  const { user } = useSelector((state) => state.auth);
+  const { user, token } = useSelector((state) => state.auth);
   const cartItemCount = items.reduce((count, item) => count + item.quantity, 0);
 
+  // Fetch cart when user logs in (token changes)
   useEffect(() => {
-    dispatch(fetchCart());
-  }, [dispatch]);
+    if (token) {
+      dispatch(fetchCart());
+    }
+  }, [dispatch, token]);
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(clearCart()); // Clear cart from UI on logout
   };
 
   return (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getProductById } from '../api/productApi';
 import { addItemToCart } from '../store/cartSlice';
 import './ProductDetail.css';
@@ -9,10 +9,13 @@ function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const { error: cartError } = useSelector((state) => state.cart);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -28,6 +31,24 @@ function ProductDetail() {
 
     fetchProduct();
   }, [id]);
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      setMessage('Please login to add items to cart');
+      setTimeout(() => setMessage(null), 3000);
+      return;
+    }
+    
+    const result = await dispatch(addItemToCart(product.id));
+    if (result.meta.requestStatus === 'fulfilled') {
+      setAddedToCart(true);
+      setMessage(null);
+      setTimeout(() => setAddedToCart(false), 2000);
+    } else {
+      setMessage(result.payload || 'Failed to add to cart');
+      setTimeout(() => setMessage(null), 3000);
+    }
+  };
 
   if (loading) {
     return <div className="loading">Loading product...</div>;
@@ -63,13 +84,10 @@ function ProductDetail() {
           <p className="product-stock">
             {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
           </p>
+          {message && <p className="cart-message">{message}</p>}
           <button 
             className="add-to-cart-btn" 
-            onClick={() => {
-              dispatch(addItemToCart(product.id));
-              setAddedToCart(true);
-              setTimeout(() => setAddedToCart(false), 2000);
-            }}
+            onClick={handleAddToCart}
           >
             {addedToCart ? '✓ Added to Cart!' : 'Add to Cart'}
           </button>
