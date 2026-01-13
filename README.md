@@ -119,7 +119,7 @@ assignment-3-e-commerce-website-development/
 
 ### Cart Features
 1. Add products to cart from product detail page
-2. Click 🛒 Cart in header to view cart
+2. Click Cart in header to view cart
 3. Remove items using "Remove" button
 
 ### Authentication Features
