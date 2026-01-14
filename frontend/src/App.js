@@ -30,7 +30,7 @@ function AppContent() {
     <div className="App">
       <header>
         <Link to="/" style={{ textDecoration: 'none', color: 'white' }}>
-          <h1>E-Commerce Store</h1>
+          <h1>iPhone Hub</h1>
         </Link>
         <nav className="header-nav">
           <Link to="/cart" className="cart-link">
@@ -38,7 +38,7 @@ function AppContent() {
           </Link>
           {user ? (
             <div className="user-menu">
-              <span className="user-name">Hi, {user.name}</span>
+              <span className="user-name">Hi, {user.name.split(' ')[0]}</span>
               <button onClick={handleLogout} className="logout-btn">Logout</button>
             </div>
           ) : (
@@ -54,6 +54,17 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
         </Routes>
       </main>
+      <footer className="site-footer">
+        <div className="footer-content">
+          <div className="footer-section">
+            <h4>iPhone Hub</h4>
+            <p>Your trusted destination for the latest iPhones. Discover cutting-edge technology, exceptional quality, and unbeatable prices on all iPhone models from the newest releases to timeless classics.</p>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>&copy; 2026 Leshan Sanjeewa. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }

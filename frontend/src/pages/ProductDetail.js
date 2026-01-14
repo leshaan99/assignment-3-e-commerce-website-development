@@ -80,6 +80,47 @@ function ProductDetail() {
           <span className="product-category-tag">{product.category}</span>
           <h1>{product.name}</h1>
           <p className="product-description">{product.description}</p>
+          
+          {product.specs && (
+            <div className="product-specs">
+              <h3>Technical Specifications</h3>
+              <div className="specs-grid">
+                <div className="spec-item">
+                  <span className="spec-label">Display</span>
+                  <span className="spec-value">{product.specs.display}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Chip</span>
+                  <span className="spec-value">{product.specs.chip}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Camera</span>
+                  <span className="spec-value">{product.specs.camera}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Front Camera</span>
+                  <span className="spec-value">{product.specs.frontCamera}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Battery</span>
+                  <span className="spec-value">{product.specs.battery}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Storage</span>
+                  <span className="spec-value">{product.specs.storage}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Colors</span>
+                  <span className="spec-value">{product.specs.colors}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">Features</span>
+                  <span className="spec-value">{product.specs.features}</span>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <p className="product-price">${product.price.toFixed(2)}</p>
           <p className="product-stock">
             {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
