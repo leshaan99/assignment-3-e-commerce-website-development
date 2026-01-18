@@ -40,7 +40,7 @@ function Cart() {
         <>
           <div className="cart-items">
             {items.map((item) => (
-              <div key={item.id} className="cart-item">
+              <div key={item.product || item._id} className="cart-item">
                 <img src={item.image} alt={item.name} className="cart-item-image" />
                 <div className="cart-item-info">
                   <h3>{item.name}</h3>
@@ -52,7 +52,7 @@ function Cart() {
                     ${(item.price * item.quantity).toFixed(2)}
                   </p>
                   <button 
-                    onClick={() => handleRemove(item.id)} 
+                    onClick={() => handleRemove(item.product || item._id)} 
                     className="remove-btn"
                   >
                     Remove

@@ -39,7 +39,7 @@ function ProductDetail() {
       return;
     }
     
-    const result = await dispatch(addItemToCart(product.id));
+    const result = await dispatch(addItemToCart(product._id));
     if (result.meta.requestStatus === 'fulfilled') {
       setAddedToCart(true);
       setMessage(null);

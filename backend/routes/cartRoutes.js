@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const products = require('../data/products');
-const { getCart, addToCart, removeFromCart, clearCart, getCartTotal } = require('../data/cart');
+const Cart = require('../models/Cart');
+const Product = require('../models/Product');
 
-const JWT_SECRET = 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
@@ -25,49 +25,94 @@ const authenticateToken = (req, res, next) => {
 };
 
 // GET /cart - Get cart items (requires auth)
-router.get('/', authenticateToken, (req, res) => {
-  const userId = req.user.id;
-  const cart = getCart(userId);
-  const total = getCartTotal(userId);
-  res.json({ items: cart, total: total });
+router.get('/', authenticateToken, async (req, res) => {
+  try {
+    let cart = await Cart.findOne({ user: req.user.id });
+    
+    if (!cart) {
+      cart = { items: [], total: 0 };
+    }
+    
+    res.json({ items: cart.items, total: cart.total });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
 });
 
 // POST /cart/add - Add item to cart (requires auth)
-router.post('/add', authenticateToken, (req, res) => {
-  const userId = req.user.id;
-  const { productId, quantity } = req.body;
-  
-  if (!productId) {
-    return res.status(400).json({ message: 'Product ID is required' });
+router.post('/add', authenticateToken, async (req, res) => {
+  try {
+    const { productId, quantity = 1 } = req.body;
+    
+    if (!productId) {
+      return res.status(400).json({ message: 'Product ID is required' });
+    }
+    
+    const product = await Product.findById(productId);
+    
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    
+    let cart = await Cart.findOne({ user: req.user.id });
+    
+    if (!cart) {
+      cart = new Cart({ user: req.user.id, items: [] });
+    }
+    
+    // Check if item already in cart
+    const existingItemIndex = cart.items.findIndex(
+      item => item.product.toString() === productId
+    );
+    
+    if (existingItemIndex > -1) {
+      cart.items[existingItemIndex].quantity += quantity;
+    } else {
+      cart.items.push({
+        product: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        quantity: quantity
+      });
+    }
+    
+    await cart.save();
+    
+    res.json({ message: 'Product added to cart', items: cart.items, total: cart.total });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
-  
-  const product = products.find(p => p.id === parseInt(productId));
-  
-  if (!product) {
-    return res.status(404).json({ message: 'Product not found' });
-  }
-  
-  const cart = addToCart(userId, product, quantity || 1);
-  const total = getCartTotal(userId);
-  
-  res.json({ message: 'Product added to cart', items: cart, total: total });
 });
 
 // DELETE /cart/:id - Remove item from cart (requires auth)
-router.delete('/:id', authenticateToken, (req, res) => {
-  const userId = req.user.id;
-  const productId = parseInt(req.params.id);
-  const cart = removeFromCart(userId, productId);
-  const total = getCartTotal(userId);
-  
-  res.json({ message: 'Product removed from cart', items: cart, total: total });
+router.delete('/:id', authenticateToken, async (req, res) => {
+  try {
+    const productId = req.params.id;
+    
+    let cart = await Cart.findOne({ user: req.user.id });
+    
+    if (!cart) {
+      return res.json({ message: 'Cart is empty', items: [], total: 0 });
+    }
+    
+    cart.items = cart.items.filter(item => item.product.toString() !== productId);
+    await cart.save();
+    
+    res.json({ message: 'Product removed from cart', items: cart.items, total: cart.total });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
 });
 
 // DELETE /cart - Clear cart (requires auth)
-router.delete('/', authenticateToken, (req, res) => {
-  const userId = req.user.id;
-  clearCart(userId);
-  res.json({ message: 'Cart cleared', items: [], total: 0 });
+router.delete('/', authenticateToken, async (req, res) => {
+  try {
+    await Cart.findOneAndDelete({ user: req.user.id });
+    res.json({ message: 'Cart cleared', items: [], total: 0 });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
 });
 
 module.exports = router;

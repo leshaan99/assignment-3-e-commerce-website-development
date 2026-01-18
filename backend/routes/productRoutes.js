@@ -1,22 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const products = require('../data/products');
+const Product = require('../models/Product');
 
 // GET /products - Get all products
-router.get('/', (req, res) => {
-  res.json(products);
+router.get('/', async (req, res) => {
+  try {
+    const products = await Product.find({});
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
 });
 
 // GET /products/:id - Get single product by ID
-router.get('/:id', (req, res) => {
-  const productId = parseInt(req.params.id);
-  const product = products.find(p => p.id === productId);
-  
-  if (!product) {
-    return res.status(404).json({ message: 'Product not found' });
+router.get('/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
-  
-  res.json(product);
 });
 
 module.exports = router;
