@@ -112,6 +112,39 @@
   font-size: 0.9rem;
 }
 
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  background: #fff;
+  border: 1px solid #000;
+  color: #000;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.qty-btn:hover {
+  background: #000;
+  color: #fff;
+}
+
+.quantity {
+  font-size: 1rem;
+  font-weight: 500;
+  min-width: 30px;
+  text-align: center;
+}
+
 .cart-item-actions {
   text-align: right;
 }

@@ -85,8 +85,38 @@ router.post('/add', authenticateToken, async (req, res) => {
   }
 });
 
-// DELETE /cart/:id - Remove item from cart (requires auth)
+// DELETE /cart/:id - Decrease item quantity by 1 (requires auth)
 router.delete('/:id', authenticateToken, async (req, res) => {
+  try {
+    const productId = req.params.id;
+    
+    let cart = await Cart.findOne({ user: req.user.id });
+    
+    if (!cart) {
+      return res.json({ message: 'Cart is empty', items: [], total: 0 });
+    }
+    
+    const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
+    
+    if (itemIndex > -1) {
+      if (cart.items[itemIndex].quantity > 1) {
+        // Decrease quantity by 1
+        cart.items[itemIndex].quantity -= 1;
+      } else {
+        // Remove item if quantity is 1
+        cart.items.splice(itemIndex, 1);
+      }
+      await cart.save();
+    }
+    
+    res.json({ message: 'Product quantity decreased', items: cart.items, total: cart.total });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// DELETE /cart/remove-all/:id - Remove all of an item from cart (requires auth)
+router.delete('/remove-all/:id', authenticateToken, async (req, res) => {
   try {
     const productId = req.params.id;
     

@@ -122,9 +122,6 @@ function ProductDetail() {
           )}
           
           <p className="product-price">${product.price.toFixed(2)}</p>
-          <p className="product-stock">
-            {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
-          </p>
           {message && <p className="cart-message">{message}</p>}
           <button 
             className="add-to-cart-btn" 
