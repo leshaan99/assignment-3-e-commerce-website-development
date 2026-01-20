@@ -8,64 +8,8 @@ A full-stack e-commerce web application built with React and Node.js/Express for
 - ✅ **Product Listing** - View all products in a responsive grid layout
 - ✅ **Product Detail** - View detailed information for each product
 - ✅ **Shopping Cart** - Add/remove products from cart
-
-### Bonus Features
 - ✅ **Redux State Management** - Global cart state using Redux Toolkit
 - ✅ **JWT Authentication** - User login and signup functionality
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|-------|------------|
-| Frontend | React.js |
-| State Management | Redux Toolkit |
-| Routing | React Router DOM |
-| Backend | Node.js + Express |
-| Authentication | JWT (jsonwebtoken) |
-| API Style | REST |
-| Database | In-memory (dummy data) |
-
-## 📁 Project Structure
-
-```
-assignment-3-e-commerce-website-development/
-├── backend/
-│   ├── server.js           # Express server entry point
-│   ├── package.json
-│   ├── data/
-│   │   ├── products.js     # Product dummy data
-│   │   ├── cart.js         # Cart data & functions
-│   │   └── users.js        # User data & functions
-│   └── routes/
-│       ├── productRoutes.js
-│       ├── cartRoutes.js
-│       └── authRoutes.js
-│
-├── frontend/
-│   ├── public/
-│   │   └── index.html
-│   ├── src/
-│   │   ├── App.js          # Main app with routing
-│   │   ├── index.js        # Entry point with Redux Provider
-│   │   ├── api/            # API service functions
-│   │   │   ├── productApi.js
-│   │   │   ├── cartApi.js
-│   │   │   └── authApi.js
-│   │   ├── components/
-│   │   │   └── ProductCard.js
-│   │   ├── pages/
-│   │   │   ├── ProductList.js
-│   │   │   ├── ProductDetail.js
-│   │   │   ├── Cart.js
-│   │   │   └── Login.js
-│   │   └── store/          # Redux store
-│   │       ├── store.js
-│   │       ├── cartSlice.js
-│   │       └── authSlice.js
-│   └── package.json
-│
-└── README.md
-```
 
 ## ⚙️ Setup Instructions
 
@@ -77,7 +21,7 @@ assignment-3-e-commerce-website-development/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/leshaan99/assignment-3-e-commerce-website-development.git
    cd assignment-3-e-commerce-website-development
    ```
 
@@ -128,6 +72,20 @@ assignment-3-e-commerce-website-development/
 3. Login with your credentials
 4. Header shows "Hi, [Name]" when logged in
 5. Click "Logout" to sign out
+
+## Environment Variables
+- **Backend:** `.env` file required for MongoDB URI and JWT secret
+
+## API Layer
+- Frontend communicates with backend via REST API
+
+## State Management
+- Redux Toolkit is used for state management
+
+## External Tools
+- **MongoDB Atlas:** Cloud database
+- **JWT:** Authentication
+- **Bcrypt:** Password hashing
 
 ## 👨‍💻 Author
 
